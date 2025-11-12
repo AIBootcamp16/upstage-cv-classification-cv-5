@@ -148,22 +148,27 @@
 ---
 
 ### 1️⃣ **데이터 불균형 및 Domain Shift 분석**
+#### 시각화
+
+![데이터 불균형](assets/class_distribution.png)
+
 
 #### 📊 **분석 과정**
 
 * 클래스별 샘플 수를 집계하여 불균형 정도를 파악
-* Train/Test의 이미지 통계량(밝기, 해상도, 노이즈 정도)을 비교
+
 
 #### 📈 **결론**
 
 * 일부 클래스(`resume`, `statement_of_opinion`, `application_for_payment`)의 **샘플 수가 현저히 적음**
-* Train은 **정방향·깨끗한 이미지**, Test는 **노이즈·회전·밝기 차이(평균 밝기 148.4 → 172.3)** 로 **Domain Shift 존재**
-* 조도(밝기) 편향으로 인해 Test 환경에서 **모델 일반화 저하 가능성** 확인
+
 
 ---
 
 ### 2️⃣ **클래스 간 혼동 및 F1 분석**
+#### 시각화
 
+![혼동행렬](assets/혼동행렬.png)
 #### 📊 **분석 과정**
 
 * 혼동행렬(Confusion Matrix)을 통해 클래스 간 오분류 관계 분석
@@ -177,6 +182,9 @@
 ---
 
 ### 3️⃣ **클래스 내부 다양성(Intra-Class Variation) 분석**
+#### 시각화
+
+![클래스 내부 다양성](assets/class_다양성.png)
 
 #### 📊 **분석 과정**
 
@@ -195,6 +203,8 @@
 ---
 
 ### 4️⃣ **이미지 크기 및 종횡비 분석**
+#### 시각화
+![이미지 크기 평균](assets/image_size_distribution.png)
 
 #### 📊 **분석 과정**
 
@@ -212,6 +222,10 @@
 ---
 
 ### 5️⃣ **밝기 및 색상 분포 분석**
+
+#### 시각화
+![Train RGB Distribution](assets/RGB_Channel_Distribution_train.png)
+![Test RGB Distribution](assets/RGB_Channel_Distribution.png)
 
 #### 📊 **분석 과정**
 
@@ -248,6 +262,8 @@
 
 ### 7️⃣ **OCR 기반 텍스트 분석 (탐색적 시도)**
 
+#### 시각화
+![sub-class](assets/sub-class_분류.png)
 #### 📊 **분석 과정**
 
 * OCR(EasyOCR)을 활용해 문서 상단 텍스트 추출
