@@ -7,28 +7,54 @@
 |            [김종화](https://github.com/UpstageAILab)             |            [박준영](https://github.com/UpstageAILab)             |            [권효주](https://github.com/UpstageAILab)             |            [안현태](https://github.com/UpstageAILab)             |            [권문진](https://github.com/UpstageAILab)             |            [최보경](https://github.com/UpstageAILab)             |
 |                            팀장, 모델설계 및 테스트                             |                            모델 설계 및 테스트                             |                            모델 설계 및 테스트                             |                            EDA 및 전처리                             |                            EDA 및 전처리                             |                            EDA 및 전처리                             |
 
-## 0. Overview
-문서 이미지를 분석하여 자동으로 문서 유형(예: 입퇴원서, 진료확인서, 신분증, 영수증 등)을 분류하는
-**딥러닝 기반 문서 분류 시스템**을 개발하였습니다.
-
-### Environment
-* **Language:** Python 3.10
-* **Version Control:** Git
-* **Environment Isolation:** `requirements.txt`
-* **Reproducibility:** Random seed 고정
-
-### Requirements
-* **Frameworks & Libraries:**
-
-  * PyTorch
-  * Timm
-  * Albumentations
-  * scikit-learn
-  * pandas
-  * OpenCV
 
 
-## 1. Competiton Info
+---
+
+## 0️⃣ Overview
+
+---
+
+문서 이미지를 분석하여 자동으로 문서 유형
+(예: **입퇴원서**, **진료확인서**, **신분증**, **영수증** 등)을 분류하는
+**딥러닝 기반 문서 분류 시스템(Deep Learning–based Document Classification System)** 을 개발하였습니다.
+
+---
+
+### ⚙️ **Environment**
+
+| 항목                        | 내용                 |
+| ------------------------- | ------------------ |
+| **Language**              | Python 3.10        |
+| **Version Control**       | Git                |
+| **Environment Isolation** | `requirements.txt` |
+| **Reproducibility**       | Random seed 고정     |
+
+---
+
+### 📦 **Requirements**
+
+> 본 프로젝트는 다음과 같은 주요 라이브러리를 기반으로 개발되었습니다.
+
+| 분류                             | 라이브러리          |
+| ------------------------------ | -------------- |
+| **Deep Learning Framework**    | PyTorch        |
+| **Model Zoo / Backbone**       | Timm           |
+| **Data Augmentation**          | Albumentations |
+| **Machine Learning Utilities** | scikit-learn   |
+| **Data Handling**              | pandas         |
+| **Image Processing**           | OpenCV         |
+
+---
+
+> 💡 **Note:**
+> 모든 실험 환경은 `requirements.txt`로 관리되며, 동일한 환경 재현이 가능합니다.
+
+---
+
+
+
+## 1️⃣ Competiton Info
 
 ### Overview
 
@@ -40,7 +66,7 @@
 * **Start:** 2025.10.31
 * **End:** 2025.11.12
 
-## 2. Components
+## 2️⃣ Components
 
 ### Directory
 
