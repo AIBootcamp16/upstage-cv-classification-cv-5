@@ -1,5 +1,7 @@
 # Title (Please modify the title)
+# 🧾 **Document Type Classification | 문서 타입 분류**
 ## Team
+**[HighFive]** 어려워도 힘들어도 소통하며 문제해결하자!
 
 | ![박패캠](https://avatars.githubusercontent.com/u/156163982?v=4) | ![이패캠](https://avatars.githubusercontent.com/u/156163982?v=4) | ![최패캠](https://avatars.githubusercontent.com/u/156163982?v=4) | ![김패캠](https://avatars.githubusercontent.com/u/156163982?v=4) | ![오패캠](https://avatars.githubusercontent.com/u/156163982?v=4) | ![오패캠](https://avatars.githubusercontent.com/u/156163982?v=4) |
 | :--------------------------------------------------------------: | :--------------------------------------------------------------: | :--------------------------------------------------------------: | :--------------------------------------------------------------: | :--------------------------------------------------------------: | :--------------------------------------------------------------: |
@@ -7,60 +9,348 @@
 |                            팀장, 모델설계 및 테스트                             |                            모델 설계 및 테스트                             |                            모델 설계 및 테스트                             |                            EDA 및 전처리                             |                            EDA 및 전처리                             |                            EDA 및 전처리                             |
 
 ## 0. Overview
+문서 이미지를 분석하여 자동으로 문서 유형(예: 입퇴원서, 진료확인서, 신분증, 영수증 등)을 분류하는
+**딥러닝 기반 문서 분류 시스템**을 개발하였습니다.
+
 ### Environment
-- _Write Development environment_
+* **Language:** Python 3.10
+* **Version Control:** Git
+* **Environment Isolation:** `requirements.txt`
+* **Reproducibility:** Random seed 고정
 
 ### Requirements
-- _Write Requirements_
+* **Frameworks & Libraries:**
+
+  * PyTorch
+  * Timm
+  * Albumentations
+  * scikit-learn
+  * pandas
+  * OpenCV
+
 
 ## 1. Competiton Info
 
 ### Overview
 
-- _Write competition information_
+해당 대회는 **문서 이미지 내의 다양한 유형(입·퇴원서, 진료확인서, 신분증, 영수증 등)** 을 자동으로 인식하고 분류하는 것을 목표로 합니다.
+이를 통해 병원, 행정, 기업 문서 처리 과정의 자동화를 촉진하는 딥러닝 기반 시스템을 구축합니다.
 
 ### Timeline
 
-- ex) January 10, 2024 - Start Date
-- ex) February 10, 2024 - Final submission deadline
+* **Start:** 2025.10.31
+* **End:** 2025.11.12
 
 ## 2. Components
 
 ### Directory
 
-- _Insert your directory structure_
-
-e.g.
 ```
-├── baseline
-│   └── baseline.ipynd
-├── source
+├── EDA/
+│   ├── EDA_Distribution.ipynb
+│   └── EDA_moongs95.ipynb
+├── baseline/
+│   ├── baseline_jhkim.ipynb
+│   ├── baseline_moongs95_efficent_kfold_aug_v5.ipynb
+│   └── hyoentae-experiment/
+├── config/
+│   ├── base.yaml
+│   └── exp_with_routing.yaml
+├── data/
+│   └── readme.txt
+├── source/
 │   └── main.py
-├── docs
-│   ├── pdf
-│   │   └── (Template) [패스트캠퍼스] Upstage AI Lab 1기_그룹 스터디 .pptx
-│   └── paper
-└── data
-    ├── test
-    ├── train
-    ├── meta.csv
-    ├── sample_submission.csv
-    └── train.csv
+├── src/
+│   ├── __init__.py
+│   ├── predict.py
+│   ├── train.py
+│   └── transforms.py
+├── requirements.txt
+└── README.md
 ```
 
 ## 3. Data descrption
 
 ### Dataset overview
 
-- _Explain using data_
+아래처럼 작성하면 깔끔하고 시각적으로 보기 좋습니다👇
+`README.md`에 바로 붙여도 자연스럽게 들어갈 거예요.
+
+---
+
+## 3️⃣ **Data Description**
+
+### 📊 **Dataset Overview**
+
+해당 프로젝트는 **문서 이미지 분류**를 위한 데이터셋을 사용하였습니다.
+
+| 구분        | 개수     | 특이사항                                                                 |
+| --------- | ------ | -------------------------------------------------------------------- |
+| **Train** | 1,570장 | 노이즈와 회전이 없는 **정방향의 깨끗한 이미지**                                         |
+| **Test**  | 3,140장 | 흐림(blur), mixup, 회전(rotation) 등이 적용된 이미지로, **Train 대비 약 15% 밝은 이미지** |
+
+---
+
+### 🧩 **특징 요약**
+
+* **Train 데이터:**
+  명확하고 정제된 이미지로 구성되어 있어 **모델의 기본 패턴 학습**에 적합합니다.
+* **Test 데이터:**
+  다양한 변형(blur, rotation, mixup, brightness)이 포함되어 있으며, **일반화 성능 평가**에 중점을 둡니다.
+
+---
+
+
+
 
 ### EDA
 
-- _Describe your EDA process and step-by-step conclusion_
+
+---
+
+## 4️⃣ **EDA (Exploratory Data Analysis)**
+
+---
+
+### 🧭 **EDA 프로세스 개요**
+
+본 프로젝트의 EDA는 **문서 이미지 분류 모델의 성능 저하 원인**을 규명하기 위해
+데이터의 **분포, 품질, 클래스 구성, 시각적 특성**을 단계적으로 분석하는 과정으로 진행하였습니다.
+
+---
+
+### 1️⃣ **데이터 불균형 및 Domain Shift 분석**
+
+#### 📊 **분석 과정**
+
+* 클래스별 샘플 수를 집계하여 불균형 정도를 파악
+* Train/Test의 이미지 통계량(밝기, 해상도, 노이즈 정도)을 비교
+
+#### 📈 **결론**
+
+* 일부 클래스(`resume`, `statement_of_opinion`, `application_for_payment`)의 **샘플 수가 현저히 적음**
+* Train은 **정방향·깨끗한 이미지**, Test는 **노이즈·회전·밝기 차이(평균 밝기 148.4 → 172.3)** 로 **Domain Shift 존재**
+* 조도(밝기) 편향으로 인해 Test 환경에서 **모델 일반화 저하 가능성** 확인
+
+---
+
+### 2️⃣ **클래스 간 혼동 및 F1 분석**
+
+#### 📊 **분석 과정**
+
+* 혼동행렬(Confusion Matrix)을 통해 클래스 간 오분류 관계 분석
+* 클래스별 F1 score을 계산하여 취약 클래스 식별
+
+#### 📈 **결론**
+
+* **Class 3 ↔ Class 7** 간 상호 오분류 빈도 높음 (약 16~25%)
+* 3, 7, 14 클래스의 F1 score가 현저히 낮음 → **시각적 유사성과 데이터 다양성 부족이 원인**
+
+---
+
+### 3️⃣ **클래스 내부 다양성(Intra-Class Variation) 분석**
+
+#### 📊 **분석 과정**
+
+* 각 클래스 내 샘플을 시각적으로 확인하고 문서 제목/양식 비교
+* 문서 형태 및 구조적 일관성 검토
+
+#### 📈 **결론**
+
+* 단일 클래스 내에서도 **서로 다른 문서 형식**이 혼재되어 있음
+
+  * ex. Class 3: 입퇴원사실확인서, 입원증명서 등
+  * Class 7: 통원·진료·치료확인서
+  * Class 13: 이력서, 지원서, 자기소개서
+* 동일 라벨 내 구조적 다양성이 커서 **모델 혼란도 증가**
+
+---
+
+### 4️⃣ **이미지 크기 및 종횡비 분석**
+
+#### 📊 **분석 과정**
+
+* Train/Test 이미지의 평균 해상도, 비율(Width/Height) 비교
+
+#### 📈 **결론**
+
+| 항목     | Train     | Test      |
+| ------ | --------- | --------- |
+| 평균 해상도 | 497×538px | 517×519px |
+| 형태     | 세로로 긴 형태  | 정사각형에 가까움 |
+
+> 단순 Resize 시 **비율 왜곡 가능성**이 있음 → 향후 전처리 시 종횡비 유지 필요성 도출
+
+---
+
+### 5️⃣ **밝기 및 색상 분포 분석**
+
+#### 📊 **분석 과정**
+
+* RGB 채널별 평균 및 분포 시각화
+* 밝기 히스토그램을 통해 노출 정도 분석
+
+#### 📈 **결론**
+
+* RGB 채널 간 색상 편향은 없음 (R≈G≈B)
+* **Test 데이터가 평균적으로 15~20% 더 밝음** → 조도 편향 존재
+* 색감보다는 **명암(밝기)** 차이가 주요 요인
+
+---
+
+### 6️⃣ **시각적 비교 및 패턴 관찰**
+
+#### 📊 **분석 과정**
+
+* Train/Test 샘플을 직접 시각적으로 비교
+* 조명, 각도, 배경, 텍스트 선명도 등을 항목별로 구분
+
+#### 📈 **결론**
+
+| 구분     | Train     | Test        |
+| ------ | --------- | ----------- |
+| 조명     | 균일, 중간 밝기 | 과노출, 반사광 다수 |
+| 각도     | 정면        | 기울기·회전 다양   |
+| 배경     | 단색        | 다양한 배경      |
+| 텍스트 명암 | 선명        | 흐림·왜곡 빈번    |
+
+> Train 대비 Test는 **촬영 환경 변동이 크고 조도 불안정성** 존재 → 실제 환경 적응력 필요
+
+---
+
+### 7️⃣ **OCR 기반 텍스트 분석 (탐색적 시도)**
+
+#### 📊 **분석 과정**
+
+* OCR(EasyOCR)을 활용해 문서 상단 텍스트 추출
+* 텍스트 기반으로 클래스 내 문서 제목·양식의 차이 검증
+
+#### 📈 **결론**
+
+* 동일 클래스 내에서도 **서브 카테고리(Sub-class)** 존재
+* OCR을 통해 문서 제목 수준의 추가 정보를 활용할 수 있음을 확인
+  → 이후 **보조 분류 시스템 설계의 근거**로 활용
+
+---
+
+### 🧩 **최종 EDA 결론 요약**
+
+| 주요 관찰 항목     | 핵심 결론                     |
+| ------------ | ------------------------- |
+| 데이터 불균형      | 특정 클래스 샘플 수 부족            |
+| Domain Shift | Train/Test 간 밝기·노이즈 차이 존재 |
+| 클래스 혼동       | 3↔7, 7↔14 간 시각적 유사성 높음    |
+| 내부 다양성       | 동일 클래스 내 문서 양식 불일치        |
+| 밝기 편향        | Test 이미지 평균 밝기 15~20% 높음  |
+| 구조 차이        | 해상도·비율·각도 불일치             |
+| OCR 탐색       | Sub-class 구분 가능성 확인       |
+
+---
+
+> 🧠 **결론적으로**, 본 EDA를 통해 데이터셋이 **작고 불균형하며 Domain Shift가 심한 구조**임을 확인하였으며,
+> 이러한 편향과 구조적 다양성이 **모델 성능 저하의 주요 원인**임을 규명했습니다.
+> 또한 OCR 텍스트를 통한 **세부 문서 단위 구분 가능성(Sub-class)** 을 발견하여
+> 이후 모델 개선의 핵심 단서로 활용하였습니다.
+
+---
+
+
 
 ### Data Processing
 
-- _Describe data processing process (e.g. Data Labeling, Data Cleaning..)_
+---
+
+## 5️⃣ **Data Processing**
+
+---
+
+### ⚙️ **Overview**
+
+본 단계에서는 **데이터 품질 개선 및 모델 입력 일관성 확보**를 위해
+이미지 전처리, 정규화, 증강(Augmentation) 과정을 체계적으로 수행하였습니다.
+또한 **Train-Test 간 Domain Shift**를 완화하고,
+실제 환경의 다양한 문서 상태(회전·밝기·노이즈)를 반영할 수 있도록 설계되었습니다.
+
+---
+
+### 1️⃣ **Data Cleaning & Standardization**
+
+#### 🧹 **Noise 제거 및 기하학적 보정**
+
+* **Deskew (기울기 교정)**
+
+  * 문서 스캔 시 발생하는 기울어진 이미지를 보정
+  * Train 데이터의 50%, Test 데이터의 100%에 적용
+  * → 텍스트 수평 정렬을 통해 OCR 및 모델의 인식 정확도 향상
+
+#### 🧾 **해상도 통일 및 비율 유지**
+
+* **512×512** 크기로 리사이즈
+* 문서 종횡비가 달라지는 왜곡 방지를 위해 **Padding(255, 흰색 배경)** 사용
+* → 다양한 문서 비율을 가진 데이터에서도 일관된 입력 유지
+
+#### 💡 **밝기 및 대비 조정 (CLAHE)**
+
+* LAB 색공간의 **L 채널**에만 적용하여 세부 명암도 향상
+* Train 데이터의 50%, Test 데이터의 100% 적용
+* → 반사광·과노출 환경에서 문서 텍스트 가독성 개선
+
+#### 🔢 **정규화 (Normalization)**
+
+* 픽셀 값을 **[-1, 1] 범위**로 정규화
+* 평균 및 표준편차: `mean = (0.5, 0.5, 0.5)`, `std = (0.5, 0.5, 0.5)`
+* → 모델 입력 분포 안정화 및 학습 안정성 확보
+
+---
+
+### 2️⃣ **Data Augmentation (Train Only)**
+
+| 증강 기법                    | 확률  | 목적               |
+| ------------------------ | --- | ---------------- |
+| RandomShadow             | 30% | 조명 변화 및 반사광 대응   |
+| RandomBrightnessContrast | 40% | 명암 조정으로 조도 편향 완화 |
+| ImageCompression         | 30% | 저화질 문서 대응        |
+| GaussNoise               | 30% | 노이즈 상황 학습        |
+| Perspective              | 30% | 문서 각도·원근 왜곡 학습   |
+| Rotate (±8°)             | 50% | 회전된 문서 시뮬레이션     |
+
+> 🎯 **목적:** 1,570장의 소규모 데이터셋에서 Test 환경을 **가상으로 재현**하여
+> 일반화(Generalization) 성능을 극대화.
+
+---
+
+### 3️⃣ **Data Labeling**
+
+* 주어진 라벨은 클래스별 문서 타입(`입퇴원서`, `진료확인서`, `영수증` 등)에 따라 부여
+* OCR 분석 결과를 참고해 일부 클래스 내 **Sub-class 식별 기준** 수립 (예: `입원요약지 → subclass 34`)
+* 해당 Sub-class 정보는 **추론 단계 보조 분류 시스템**에서 활용
+
+---
+
+### 4️⃣ **Pipeline Design**
+
+* 전처리 과정 전체를 **모듈화(Python 함수 단위)** 로 구현
+
+  * `deskew()`, `apply_clahe()`, `resize_with_padding()` 등
+* Albumentations 라이브러리를 활용하여 GPU 기반으로 증강 처리
+* **재현성 확보:** `seed = 42` 고정
+* **일관성 유지:**
+
+  * Train → 증강 중심
+  * Test → 보정 중심 (증강 미적용)
+
+---
+
+### 🧩 **결론**
+
+> 데이터 전처리는 단순한 이미지 변환을 넘어,
+> **Domain Shift 완화**, **조도 균일화**, **문서 구조 보정**을 중심으로 설계되었습니다.
+> 이를 통해 입력 이미지의 일관성을 확보하고,
+> 소규모 데이터 환경에서도 **강건한 학습 성능(robustness)** 을 달성하였습니다.
+
+---
+
+
 
 ## 4. Modeling
 
