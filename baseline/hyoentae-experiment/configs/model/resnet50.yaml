@@ -1,0 +1,7 @@
+name: resnet50
+architecture: resnet50
+pretrained: true
+input_size: 224
+num_classes: 17
+
+dropout: 0.0

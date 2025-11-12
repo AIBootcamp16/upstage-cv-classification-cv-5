@@ -1,0 +1,70 @@
+# Ensemble Configuration for OCR + Vision Models
+# 여러 모델의 예측을 결합하여 최종 submission을 생성합니다.
+
+# 모델 정의 (각 모델의 역할과 가중치 명시)
+models:
+  # SOTA 모델 (0.963 macro f1)
+  - path: "resnext_v1_k-fold_0_model.csv"
+    type: "sota"
+    weight: 1.0
+    confidence_threshold: 0.95  # 이 값 이상이면 바로 채택
+    description: "Main SOTA model - ResNeXt"
+
+  # OCR 기반 모델 (클래스 3, 7 전문)
+  - path: "ocr_predictions.csv"
+    type: "ocr"
+    weight: 1.0
+    priority_classes: [3, 7]  # 이 클래스들에 대해 우선권
+    description: "OCR-based classifier for classes 3, 7"
+
+  # 추가 Vision 모델들 (optional)
+  - path: "convnext_large.csv"
+    type: "vision"
+    weight: 0.8
+    description: "ConvNeXt Large"
+    enabled: false  # 사용 안 함 (필요시 true로 변경)
+
+  - path: "efficientnet_b3.csv"
+    type: "vision"
+    weight: 0.7
+    description: "EfficientNet B3"
+    enabled: false
+
+# 앙상블 전략
+ensemble_strategy:
+  # Step 1: SOTA 모델 신뢰도 체크
+  use_sota_if_confidence_above: 0.95
+
+  # Step 2: 문제 클래스 처리 (3, 7)
+  problematic_classes: [3, 7]
+  use_ocr_for_problematic: true
+  ocr_confidence_threshold: 0.7  # OCR도 낮으면 voting
+
+  # Step 3: 나머지 케이스
+  default_method: "soft_voting"  # soft_voting, hard_voting, weighted_voting
+
+  # Voting 설정
+  voting:
+    method: "soft"  # soft: 확률 평균, hard: 다수결
+    min_agreement: 0.5  # hard voting시 최소 동의 비율
+
+# 데이터 경로
+data:
+  test_images_dir: "datasets_fin/test"
+  sample_submission: "datasets_fin/sample_submission.csv"
+
+# 출력
+output:
+  submission_path: "final_submission.csv"
+  save_probabilities: true  # 확률도 저장할지 (디버깅용)
+  probabilities_path: "ensemble_probabilities.csv"
+
+# OCR 설정 (extract_ocr_features.py 용)
+ocr:
+  engine: "easyocr"  # "easyocr" 또는 "pytesseract"
+  languages: ["ko", "en"]  # 한국어, 영어
+  batch_size: 8
+
+# 로깅
+verbose: true
+save_debug_info: true

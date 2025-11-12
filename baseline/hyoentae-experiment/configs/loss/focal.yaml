@@ -1,0 +1,17 @@
+# Focal Loss 설정 (클래스 3-7, 14 집중 전략!)
+
+type: focal
+
+# Focal Loss 파라미터
+alpha: 0.25              # 클래스 균형 파라미터 (0~1)
+gamma: 2.0               # Focusing 파라미터 (0~5)
+                         # gamma=2.0: 보통 (기본값)
+                         # gamma=3.0: 강하게 집중 (클래스 3-7, 14 추천!)
+                         # gamma=5.0: 매우 강하게 집중
+
+# Label Smoothing (과적합 방지)
+label_smoothing: 0.1     # 0.0~0.2 권장 (0.1이 보통)
+
+# Class Weights (옵션, 특정 클래스 강조)
+class_weights: null      # null 또는 [1.0, 1.0, ..., 2.0, ...]
+                         # 예: [1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 2.0, 2.0, 1.0, ...]

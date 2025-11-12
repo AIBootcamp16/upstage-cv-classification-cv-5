@@ -1,0 +1,177 @@
+# SOTA 증강 설정 (0.925 기반)
+
+
+# @package _global_
+
+# Augmentation 이름
+name: strong
+
+# Image preprocessing
+resize:
+  method: "resize"  # SOTA는 일반 Resize 사용
+
+# Train augmentation (SOTA 기반!)
+train:
+  # 🔄 회전 (Test 데이터에 다양한 각도 회전 존재)
+  random_rotation:
+    enabled: true
+    degrees: [-180, 180]  # 모든 각도 대응 (Test 데이터 특성)
+    p: 0.5  # 0.7 → 0.5 (학습 안정화)
+
+  # 💡 밝기/대비 조정 (SOTA: RandomBrightnessContrast 대신 ColorJitter 사용)
+  color_jitter:
+    enabled: true
+    brightness: 0.25  # SOTA brightness_limit=0.25
+    contrast: 0.25    # SOTA contrast_limit=0.25
+    saturation: 0.0   # SOTA에 없음
+    hue: 0.0          # SOTA에 없음
+    p: 0.4  # 0.5 → 0.4
+
+  # 📐 문서 왜곡 (SOTA에 없음)
+  random_affine:
+    enabled: false
+    degrees: 15
+    translate: [0.1, 0.1]
+    scale: [0.95, 1.1]
+    p: 0.3
+
+  # 🔀 Flip (SOTA에서 주석 처리됨)
+  horizontal_flip:
+    enabled: false
+    p: 0.5
+
+  vertical_flip:
+    enabled: false
+    p: 0.5
+
+  # 🌫️ Noise (SOTA: var_limit=(10.0, 50.0), p=0.4)
+  gauss_noise:
+    enabled: true
+    var_limit: [10.0, 50.0]
+    p: 0.3  # 0.4 → 0.3
+
+  iso_noise:
+    enabled: false
+    color_shift: [0.01, 0.05]
+    intensity: [0.1, 0.5]
+    p: 0.0
+
+  # 📦 Dropout (Test 데이터에 겹쳐진 이미지 존재)
+  coarse_dropout:
+    enabled: true  # 겹침 효과 대응
+    max_holes: 8
+    max_height_ratio: 0.1
+    max_width_ratio: 0.1
+    fill_value: 255
+    p: 0.2  # 0.3 → 0.2
+
+  # 🌀 Blur (Test 데이터에 흐린 이미지 다수 존재)
+  # OneOf: 여러 Blur 중 하나만 랜덤 선택
+  blur_oneof:
+    enabled: true   # OneOf 사용 on/off (Test 데이터 대응)
+    p: 0.5          # OneOf 블록 실행 확률 (0.7 → 0.5)
+
+    motion_blur:
+      enabled: true
+      blur_limit: [3, 7]
+
+    gaussian_blur:
+      enabled: true
+      blur_limit: [3, 5]
+
+    median_blur:
+      enabled: true
+      blur_limit: 3
+
+  # 개별 Blur (blur_oneof.enabled=false일 때만 사용됨)
+  motion_blur:
+    enabled: false
+    blur_limit: [3, 7]
+    p: 0.33
+
+  gaussian_blur:
+    enabled: false
+    blur_limit: [3, 5]
+    p: 0.33
+
+  median_blur:
+    enabled: false
+    blur_limit: 3
+    p: 0.34
+
+  # 🎨 Gamma 보정 (SOTA: gamma_limit=(80, 120), p=0.5)
+  random_gamma:
+    enabled: true
+    gamma_limit: [80, 120]
+    p: 0.3  # 0.5 → 0.3
+
+  # Normalization (ImageNet stats)
+  normalize:
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]
+
+# 📄 Augraphy 설정 (문서 특화 증강 - 클래스 3-7, 14 대응!)
+augraphy:
+  enabled: false           # Augraphy 활성화 여부
+  strength: strong        # 증강 강도: weak, medium, strong
+  probability: 0.5        # 적용 확률
+  target_classes:   # 이 클래스들에만 적용 (null=전체)
+                                        # 클래스 3-7, 14: 저품질 문서 이미지
+
+# Validation augmentation (재현성을 위해 증강 제거)
+# Val은 고정된 이미지로 평가 → Test와 동일한 평가 방식
+# 이렇게 하면 Val 성능이 Test 성능을 더 정확히 예측함
+val:
+  # 🔄 회전 (비활성화 - 재현성 확보)
+  random_rotation:
+    enabled: false
+    degrees: [-180, 180]
+    p: 0.0
+
+  # 🌀 Blur (비활성화 - 재현성 확보)
+  blur_oneof:
+    enabled: false
+    p: 0.0
+
+    motion_blur:
+      enabled: false
+      blur_limit: [3, 7]
+
+    gaussian_blur:
+      enabled: false
+      blur_limit: [3, 5]
+
+    median_blur:
+      enabled: false
+      blur_limit: 3
+
+  # Normalization (유지)
+  normalize:
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]
+
+# Test augmentation (minimal)
+test:
+  normalize:
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]
+
+# MixUp 설정
+mixup:
+  enabled: false         # MixUp 활성화
+  alpha: 0.1           # Beta 분포 파라미터 (낮을수록 원본에 가까움)
+  prob: 0.2           # 적용 확률
+
+# CutMix 설정
+cutmix:
+  enabled: false       # CutMix 비활성화 (MixUp과 함께 사용 시 주의)
+  alpha: 0.5           # Beta 분포 파라미터
+  prob: 0.3            # 적용 확률
+
+# 주의: MixUp과 CutMix는 랜덤하게 하나씩 적용됨
+# 두 기법 모두 enabled=true일 때, 매 배치마다 둘 중 하나가 랜덤 선택됨
+
+# 강력한 증강 사용 시 권장 학습 설정
+# - Epoch 수: 50-100 (증강으로 과적합 방지되므로 많이 돌려도 됨)
+# - Early stopping patience: 15-20 (기본보다 높게)
+# - Dropout: 0.3-0.5 (기본보다 높게)

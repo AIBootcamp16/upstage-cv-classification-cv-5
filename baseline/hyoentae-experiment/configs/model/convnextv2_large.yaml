@@ -1,0 +1,8 @@
+name: convnextv2_large.fcmae_ft_in22k_in1k
+architecture: convnextv2_large
+pretrained: true
+input_size: 512
+num_classes: 17
+
+dropout: 0.1
+drop_path_rate: 0.1

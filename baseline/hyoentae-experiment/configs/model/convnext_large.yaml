@@ -1,0 +1,8 @@
+name: convnext_large
+architecture: convnext_large
+pretrained: true
+input_size: 384
+num_classes: 17
+
+dropout: 0.0
+drop_path_rate: 0.1

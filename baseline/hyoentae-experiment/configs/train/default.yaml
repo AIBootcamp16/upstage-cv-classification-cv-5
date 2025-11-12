@@ -1,0 +1,67 @@
+# Training hyperparameters
+batch_size: 32
+epochs: 100
+num_workers: 8
+
+# Optimizer
+optimizer:
+  name: adamw
+  lr: 0.0003  # 3e-4
+  weight_decay: 0.0001  # 1e-4
+
+# Scheduler
+scheduler:
+  name: cosine
+  warmup_epochs: 5
+  min_lr: 0.00005
+
+# Mixed Precision Training
+amp: true
+
+# Augmentation
+mixup_alpha: 0.2
+cutmix_alpha: 0.0
+
+# Gradient Clipping
+grad_clip: 1.0
+
+# Class Weighting
+class_weight: balanced  # 'balanced' or null
+
+# Label Smoothing
+label_smoothing: 0.05
+
+# Loss
+loss: cross_entropy
+
+# Best Model Selection (과적합 고려)
+use_generalization_score: false  # Generalization score 사용 여부
+overfitting_penalty: 0.3  # 과적합 페널티 (0.0~1.0)
+                          # 0.0: 과적합 무시 (Val F1만 고려)
+                          # 0.3: 권장값 (적당한 과적합 방지)
+                          # 0.5: 강한 과적합 방지
+
+# Metrics (⭐ 추가)
+metrics:
+  primary: macro_f1  # Main evaluation metric
+  monitor: val_macro_f1  # For early stopping & model selection
+  mode: max  # Higher is better
+
+# Early stopping
+early_stopping:
+  patience: 15
+  monitor: val_macro_f1  # ⭐ loss → macro_f1로 변경
+  mode: max  # ⭐ min → max로 변경
+
+# Validation
+val_split: 0.2
+
+# K-Fold Cross Validation (Optional)
+k_fold:
+  enabled: true  # K-Fold 사용 여부
+  n_splits: 5  # Fold 개수 (기본 5-fold)
+  shuffle: true  # Fold 분할 시 셔플 여부
+  # K-Fold 활성화 시:
+  # - n_splits개의 모델이 학습됨
+  # - 각 fold별 best.pth 저장 (fold_0/best.pth, fold_1/best.pth, ...)
+  # - val_split은 무시됨 (K-Fold가 자동으로 validation 분할)

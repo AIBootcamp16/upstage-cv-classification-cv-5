@@ -1,0 +1,153 @@
+# SOTA Model Augmentation Configuration
+# Based on the best performing model settings
+
+# Image preprocessing
+resize:
+  method: "letterbox"  # Use letterbox (aspect ratio preserving + padding)
+
+# ========== Custom Preprocessing (SOTA) ==========
+# These are applied BEFORE augmentations
+
+# Deskew (문서 각도 보정)
+deskew:
+  enabled: true
+  train_p: 0.35  # Train: 35% probability
+  valid_p: 1.0   # Valid: always apply
+
+# CLAHE (대비 향상)
+clahe:
+  enabled: true
+  train_clip: 1.6   # Train: clip limit
+  valid_clip: 1.9   # Valid: clip limit
+  grid_size: 8
+  train_p: 0.50     # Train: 50% probability
+  valid_p: 1.0      # Valid: always apply
+
+# Unsharp masking (선명도 향상)
+unsharp:
+  enabled: true
+  train_amount: 0.6  # Train: sharpness amount
+  valid_amount: 0.5  # Valid: sharpness amount
+  train_p: 0.30      # Train: 30% probability
+  valid_p: 1.0       # Valid: always apply
+
+# ========== Train Augmentation (SOTA) ==========
+train:
+  # Geometric transformations (OneOf)
+  geometric:
+    enabled: true
+    p: 0.7  # Apply geometric transform with 60% probability
+
+    # Affine transform (70% within OneOf)
+    affine:
+      enabled: true
+      scale: 0.94
+      translate_percent: 0.02
+      rotate: [-20, 20]
+      border_mode: "replicate"
+      p: 0.7
+
+    # Perspective transform (30% within OneOf)
+    perspective:
+      enabled: true
+      scale: [0.02, 0.05]
+      p: 0.3
+
+  # Motion/Median blur (OneOf)
+  blur_motion:
+    enabled: true
+    p: 0.25  # Apply with 25% probability
+
+    motion_blur:
+      enabled: true
+      blur_limit: 5
+      p: 1.0
+
+    median_blur:
+      enabled: true
+      blur_limit: 3
+      p: 1.0
+
+  # Noise and quality degradation (OneOf)
+  noise:
+    enabled: true
+    p: 0.35  # Apply with 35% probability
+
+    blur_simple:
+      enabled: true
+      blur_limit: [3, 7]
+      p: 1.0
+
+    gauss_noise:
+      enabled: true
+      std_range: [0.20, 0.44]  # Normalized std range
+      p: 1.0
+
+    iso_noise:
+      enabled: true
+      p: 1.0
+
+  # Brightness and Contrast
+  brightness_contrast:
+    enabled: true
+    brightness_limit: 0.15
+    contrast_limit: 0.15
+    p: 0.35
+
+  # ========== Disabled augmentations (SOTA doesn't use these) ==========
+  # These are set to false because SOTA model doesn't use them
+
+  random_rotation:
+    enabled: false
+    degrees: [-30, 30]
+    p: 0.7
+
+  color_jitter:
+    enabled: false
+    brightness: 1.15
+    contrast: 0.2
+    saturation: 0.05
+    p: 0.6
+
+  random_affine:
+    enabled: false
+    degrees: 15
+    translate: [0.1, 0.1]
+    scale: [0.9, 1.1]
+    p: 0.3
+
+  horizontal_flip:
+    enabled: false
+    p: 0.5
+
+  vertical_flip:
+    enabled: false
+    p: 0.3
+
+  # Normalization (ImageNet stats)
+  normalize:
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]
+
+# ========== Validation Preprocessing (SOTA) ==========
+# Validation uses stronger preprocessing but NO augmentation
+valid:
+  # All preprocessing is applied with p=1.0 in validation
+  # (deskew, clahe, unsharp are defined above)
+
+  normalize:
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]
+
+# Test preprocessing
+test:
+  normalize:
+    mean: [0.485, 0.456, 0.406]
+    std: [0.229, 0.224, 0.225]
+
+# Augraphy (disabled for SOTA)
+augraphy:
+  enabled: false
+  strength: 'medium'
+  probability: 0.7
+  target_classes: null

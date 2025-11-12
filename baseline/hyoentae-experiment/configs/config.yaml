@@ -1,0 +1,56 @@
+defaults:
+  - model: resnext50
+  - train: default
+  - augmentation: strong
+  - loss: cross_entropy
+  - _self_
+
+# Paths
+data:
+  data_dir: "datasets_fin"
+  train_dir: "train"
+  test_dir: "test"
+  train_csv: "train.csv"
+  test_csv: "sample_submission.csv"
+  val_split: 0.2
+  num_workers: 8
+  num_classes: 17
+
+# Basic settings
+seed: 42
+device: "cuda"
+
+# Output
+output_dir: "./outputs"
+experiment_name: "document_classification"
+
+
+# ✅ Wandb 설정 추가
+wandb:
+  enabled: true  # wandb 사용 여부
+  project: "cv_classification"  # wandb 프로젝트 이름
+  entity: null
+  name: convnextv2_large_v1_3 # 실험 이름 (null이면 자동 생성: efficientnet_b0_default_v1)
+              # 직접 지정: "my_experiment_v1"
+  tags: []  # 실험 태그 (자동 생성: [model_name, augmentation_name])
+  notes: ""  # 실험 노트
+
+# Inference settings (선택사항)
+checkpoint: null  # 단일 모델 체크포인트 경로 (inference.py용)
+checkpoint_path: "outputs/checkpoints/best.pth"  # 레거시
+submission_name: "resnext50_sub_class__model.csv"
+
+# K-Fold inference settings
+kfold_dir: null  # K-Fold 실험 디렉토리 (null이면 자동 검색)
+use_tta: false   # TTA 사용 여부
+tta: 4  # TTA 증강 개수
+top_k_folds: null  # Val F1 기준 상위 k개 fold만 사용 (null이면 전체 사용)
+use_folds: null  # 특정 fold 번호 리스트 (예: [0,2,4], null이면 전체 사용)
+folds: [0, 1, 2, 3, 4]  # 학습할 fold 리스트
+
+# 오프라인 데이터 증강 설정 (augment_dataset.py 사용)
+augment:
+  n_augmentations: 4  # 각 이미지당 생성할 증강 이미지 개수
+  output_suffix: "_augmented"  # 출력 디렉토리/파일 접미사 (train_augmented/)
+  include_original: true  # 원본 이미지도 포함할지 여부
+  aug_multiplier: 4  # 학습 시 증강 배수 (각 이미지를 aug_multiplier번 증강)

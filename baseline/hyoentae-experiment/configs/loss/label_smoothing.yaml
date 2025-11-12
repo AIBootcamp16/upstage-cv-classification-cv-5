@@ -1,0 +1,12 @@
+# Label Smoothing Cross Entropy 설정 (과적합 방지)
+
+type: label_smoothing
+
+# Label Smoothing 파라미터
+label_smoothing: 0.1     # 0.0~0.2 권장
+                         # 0.0: 일반 CE
+                         # 0.1: 보통 (기본값, 추천)
+                         # 0.2: 강하게
+
+# Class Weights (옵션)
+class_weights: null      # null 또는 [1.0, 1.0, ..., 2.0, ...]

@@ -1,0 +1,8 @@
+name: convnext_tiny.fb_in22k_ft_in1k
+architecture: convnext_tiny.fb_in22k_ft_in1k
+pretrained: true
+input_size: 640
+num_classes: 17
+
+dropout: 0.1
+drop_path_rate: 0.1

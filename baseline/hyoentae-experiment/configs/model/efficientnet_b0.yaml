@@ -1,0 +1,8 @@
+name: efficientnet_b0
+architecture: efficientnet_b0
+pretrained: true
+input_size: 224
+num_classes: 17
+
+# Model-specific params
+dropout: 0.2

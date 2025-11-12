@@ -1,0 +1,7 @@
+# 일반 Cross Entropy Loss 설정
+
+type: cross_entropy
+
+# Label Smoothing (옵션)
+label_smoothing: 0.1     # 0.0: 비활성화
+                         # 0.1: 활성화 (과적합 방지)

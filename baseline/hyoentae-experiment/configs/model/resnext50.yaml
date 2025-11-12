@@ -1,0 +1,7 @@
+name: resnext50_32x4d
+architecture: resnext50_32x4d
+pretrained: true
+input_size: 384
+num_classes: 17
+
+dropout: 0.2

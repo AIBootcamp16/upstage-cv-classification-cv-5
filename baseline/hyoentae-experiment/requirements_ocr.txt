@@ -1,0 +1,16 @@
+# OCR 파이프라인 추가 의존성 (ocr_test_pipeline.py 전용)
+# 기본 requirements.txt 설치 후 이 파일을 추가로 설치하세요:
+# pip install -r requirements_ocr.txt
+
+# OCR 엔진
+easyocr>=1.7.0
+
+# 텍스트 매칭 및 정규화
+rapidfuzz>=3.0.0
+regex>=2023.0.0
+
+# 기존 requirements.txt에 있는 것들 (자동 설치됨):
+# opencv-python-headless
+# numpy
+# pandas
+# tqdm

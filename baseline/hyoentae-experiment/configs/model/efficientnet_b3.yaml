@@ -1,0 +1,7 @@
+name: efficientnet_b3
+architecture: efficientnet_b3
+pretrained: true
+input_size: 384
+num_classes: 17
+
+dropout: 0.3

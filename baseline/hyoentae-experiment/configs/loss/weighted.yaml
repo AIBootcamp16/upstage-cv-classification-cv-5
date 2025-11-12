@@ -1,0 +1,26 @@
+# Weighted Cross Entropy 설정 (수동 클래스 가중치)
+
+type: weighted
+
+# Class Weights (클래스 3-7, 14에 2배 가중치 예시)
+class_weights:
+  - 1.0  # Class 0
+  - 1.0  # Class 1
+  - 1.0  # Class 2
+  - 2.0  # Class 3 🎯
+  - 2.0  # Class 4 🎯
+  - 2.0  # Class 5 🎯
+  - 2.0  # Class 6 🎯
+  - 2.0  # Class 7 🎯
+  - 1.0  # Class 8
+  - 1.0  # Class 9
+  - 1.0  # Class 10
+  - 1.0  # Class 11
+  - 1.0  # Class 12
+  - 1.0  # Class 13
+  - 2.0  # Class 14 🎯
+  - 1.0  # Class 15
+  - 1.0  # Class 16
+
+# Label Smoothing (옵션)
+label_smoothing: 0.1
