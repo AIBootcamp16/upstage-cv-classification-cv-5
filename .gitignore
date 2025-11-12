@@ -48,7 +48,7 @@ wandb/
 *.csv
 
 # 시각화 결과
-*.png
+
 *.jpg
 *.jpeg
 *.gif
