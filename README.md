@@ -607,24 +607,60 @@ temp_full_mult4_tta4.yaml
 을 모두 포함한 End-to-End 고성능 파이프라인입니다.
 
 
-### Model descrition
-
-- _Write model information and why your select this model_
-
-### Modeling Process
-
-- _Write model train and test process with capture_
-
 ## 5. Result
 
-### Leader Board
+## 📊 Leaderboard 성능 요약
+| File | Strategy | F1 Score |
+|------|----------|----------|
+| **submission_26_44elmg.csv** | Stage 1–2 (Easy-Lock + Meta-Gate) | ⭐ **0.9634** |
+| submission_26_44elmgtgpr.csv | Stages 1–4 전체 적용 | 0.9628 |
+| **Final OCR Conditional Ensemble** | Stage 1–2 + OCR 보조 분류 | 🌟 **0.9683** |
 
-- _Insert Leader Board Capture_
-- _Write rank and score_
+---
 
-### Presentation
+## 🚀 4단계 게이트형 개선 전략
 
-- _Insert your presentaion file(pdf) link_
+### 1) Easy-Lock  
+고확신 클래스(0,2,5,8,9,15,16)를 보호 (34.9%)
+
+### 2) Meta-Gate  
+엔트로피 > 1.4, 확률 마진 < 0.10인 불확실 샘플만 메타 모델 적용 (1.2%)
+
+### 3) Text-Gate  
+3↔7, 4↔14 초근접 클래스에만 텍스트 기반 보정 (0.4%)
+
+### 4) Pair Refiner  
+극도로 근접한 페어만 미세 조정
+
+---
+
+## ❗ 핵심 결론
+- 보정 단계를 많이 적용할수록 성능이 하락  
+- **Stage 1–2만 적용한 전략이 최고 성능(F1=0.9634)**  
+- 최소 개입 원칙이 가장 안정적
+
+---
+
+## 🔍 OCR 기반 Conditional Ensemble (최종 성능 향상 핵심)
+
+### 적용 클래스: 3, 7, 14  
+- EasyOCR 기반 텍스트 추출  
+- Crop/Rotation/Flip/Otsu 전처리  
+- 텍스트 기반 Sub-class 매핑
+
+### Ensemble Logic
+- OCR 인식 성공 → OCR 결과 사용  
+- 인식 실패 → 기존 SOTA 모델 예측 유지  
+
+### 결과
+- 기존 최고: **0.9634**  
+- **OCR 적용 후: 0.9683 (+0.0049)**
+
+---
+
+## 📑 Presentation
+🔗 https://docs.google.com/presentation/d/1_s5--4S6BSyY_0GM227u9oa35uPCx0u0/edit?slide=id.g37012ab8176_8_622
+
 
 ## etc
 
