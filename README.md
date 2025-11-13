@@ -388,7 +388,7 @@
 
 
 
-## 4. Modeling
+## 6. Modeling
 
 ### 🧱 프로젝트 구조
 ```
@@ -607,9 +607,9 @@ temp_full_mult4_tta4.yaml
 을 모두 포함한 End-to-End 고성능 파이프라인입니다.
 
 
-## 5. Result
+## 7. Result
 
-## 📊 Leaderboard 성능 요약
+### 📊 Leaderboard 성능 요약
 | File | Strategy | F1 Score |
 |------|----------|----------|
 | **submission_26_44elmg.csv** | Stage 1–2 (Easy-Lock + Meta-Gate) | ⭐ **0.9634** |
@@ -618,47 +618,47 @@ temp_full_mult4_tta4.yaml
 
 ---
 
-## 🚀 4단계 게이트형 개선 전략
+### 🚀 4단계 게이트형 개선 전략
 
-### 1) Easy-Lock  
+#### 1) Easy-Lock  
 고확신 클래스(0,2,5,8,9,15,16)를 보호 (34.9%)
 
-### 2) Meta-Gate  
+#### 2) Meta-Gate  
 엔트로피 > 1.4, 확률 마진 < 0.10인 불확실 샘플만 메타 모델 적용 (1.2%)
 
-### 3) Text-Gate  
+#### 3) Text-Gate  
 3↔7, 4↔14 초근접 클래스에만 텍스트 기반 보정 (0.4%)
 
-### 4) Pair Refiner  
+#### 4) Pair Refiner  
 극도로 근접한 페어만 미세 조정
 
 ---
 
-## ❗ 핵심 결론
+### ❗ 핵심 결론
 - 보정 단계를 많이 적용할수록 성능이 하락  
 - **Stage 1–2만 적용한 전략이 최고 성능(F1=0.9634)**  
 - 최소 개입 원칙이 가장 안정적
 
 ---
 
-## 🔍 OCR 기반 Conditional Ensemble (최종 성능 향상 핵심)
+### 🔍 OCR 기반 Conditional Ensemble (최종 성능 향상 핵심)
 
-### 적용 클래스: 3, 7, 14  
+#### 적용 클래스: 3, 7, 14  
 - EasyOCR 기반 텍스트 추출  
 - Crop/Rotation/Flip/Otsu 전처리  
 - 텍스트 기반 Sub-class 매핑
 
-### Ensemble Logic
+#### Ensemble Logic
 - OCR 인식 성공 → OCR 결과 사용  
 - 인식 실패 → 기존 SOTA 모델 예측 유지  
 
-### 결과
+#### 결과
 - 기존 최고: **0.9634**  
 - **OCR 적용 후: 0.9683 (+0.0049)**
 
 ---
 
-## 📑 Presentation
+### 📑 Presentation
 🔗 https://docs.google.com/presentation/d/1_s5--4S6BSyY_0GM227u9oa35uPCx0u0/edit?slide=id.g37012ab8176_8_622
 
 
@@ -666,8 +666,16 @@ temp_full_mult4_tta4.yaml
 
 ### Meeting Log
 
-- _Insert your meeting log link like Notion or Google Docs_
+- [_Insert your meeting log link like Notion or Google Docs_](https://www.notion.so/HighFive-29abb811b377809694a6c55a530cf710)
 
 ### Reference
 
-- _Insert related reference_
+- 노이즈 제거 및 기울기 보정(Deskewing)
+- CNN (Convolutional Neural Network)
+- Deep Learning for Technical Document Classification (2021)
+- Document-Image-Classification-with-Intra-Domain-Transfer-Learning
+- OCR 없이 end-to-end로 문서를 이해하는 모델로, 시각 정보와 텍스트 정보 동시 학습
+- Document image analysis and recognition: a survey (2022)
+- DiT (Document Image Transformer)
+- Kaggle - Documents Classification Using CNN
+
