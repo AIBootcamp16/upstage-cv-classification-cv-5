@@ -390,6 +390,223 @@
 
 ## 4. Modeling
 
+### 🧱 프로젝트 구조
+```
+configs/
+ └── temp_full_mult4_tta4.yaml     # 전체 파이프라인 설정 파일
+
+src/
+ ├── transforms.py                 # 이미지 전처리·증강 정의
+ ├── train.py                      # K-Fold 학습 및 검증
+ └── predict.py                    # 추론(TTA) + Fold 앙상블
+
+outputs/
+ ├── fold0/best.pt ... fold4/best.pt  # Fold별 최적 가중치
+ ├── submission.csv                  # 최종 예측 결과
+ └── predict_logits.pt               # 분석용 Logits 저장
+```
+### ⚙️ 학습/추론 파이프라인 개요
+#### 🔧 1) 설정 파일 → 전체 파이프라인 제어
+
+temp_full_mult4_tta4.yaml
+
+* 이미지 크기(img_size)
+
+* 교차 검증(n_splits=5)
+
+* 데이터 증강 배수(aug_multiplier=4)
+
+* 모델 종류(convnext_tiny.fb_in22k_ft_in1k)
+
+* 학습 옵션(epoch, lr, scheduler, mixup 등)
+
+* 추론 옵션(TTA=4)
+
+* 출력 경로(out_dir)
+
+모든 하이퍼파라미터는 이 파일 하나로 관리합니다.
+
+#### 🏋️‍♂️ 2) 학습 (train.py)
+전체 프로세스
+```
+YAML 설정 로드 → 시드 고정 → K-Fold 분할(5)
+   ↓
+Fold별 데이터셋 생성
+   ↓
+Albumentations 기반 전처리 + RepeatAug(×4)
+   ↓
+ConvNeXt-Tiny 모델 생성 (timm)
+   ↓
+AMP + Mixup + Cosine LR + Class Weight
+   ↓
+Early Stopping → foldN/best.pt 저장
+```
+
+주요 기능
+
+* StratifiedKFold(5) 교차 검증
+
+* RepeatAugDataset: 데이터셋을 4배 확장
+
+* MixUp(alpha=0.2)
+
+* Automatic Mixed Precision (GPU 최적화)
+
+* Gradient Clipping
+
+* Class Imbalance 보정(weight="balanced")
+
+* Early stopping(patience=3)
+
+#### 🔍 3) 전처리·증강 (transforms.py)
+
+문서 이미지 최적화 전처리 + 확률적 증강 적용.
+
+##### 핵심 전처리
+
+* Deskew(기울기 보정)
+
+* CLAHE(대비 향상)
+
+* Unsharp Masking(선명화)
+
+* Letterbox(비율 유지 리사이즈, 640×640)
+
+##### 학습용 Stochastic Augmentation
+
+* Affine / Perspective
+
+* Blur / MotionBlur / MedianBlur
+
+* GaussNoise / ISONoise
+
+* Brightness/Contrast
+
+* Normalize(ImageNet mean/std)
+
+##### 검증·추론용 전처리 (증강 없음)
+
+* Deskew + CLAHE + Unsharp
+
+* Normalize 후 Tensor 변환
+
+#### 🚀 4) 추론 + Fold 앙상블 (predict.py)
+프로세스
+```
+Valid transform 적용
+   ↓
+fold0~4/best.pt 가중치 로드
+   ↓
+TTA(0°,90°,180°,270° 회전)
+   ↓
+각 Fold의 logits 평균
+   ↓
+최종 라벨 선택
+   ↓
+submission.csv 저장
+   ↓
+predict_logits.pt 저장
+```
+특징
+
+* Rotation TTA(4-way)
+
+* Fold별 logits 평균 앙상블
+
+* 자동 컬럼 감지(id, filename 등)
+
+* 분석용 logits + 이미지 ID 저장
+
+### 📁 temp_full_mult4_tta4.yaml (주요 설정)
+```
+seed: 42
+device: auto
+num_workers: 0
+
+data:
+  img_size: 640
+  n_splits: 5
+  folds: [0,1,2,3,4]
+  aug_multiplier: 4
+  tta: 4
+
+model:
+  name: convnext_tiny.fb_in22k_ft_in1k
+  pretrained: true
+  dropout: 0.1
+  label_smoothing: 0.05
+
+train:
+  epochs: 12
+  batch_size: 32
+  lr: 3e-4
+  weight_decay: 1e-4
+  scheduler: cosine
+  early_stop_patience: 3
+  amp: true
+  mixup_alpha: 0.2
+  class_weight: balanced
+```
+
+### ▶️ 실행 방법
+학습
+```
+python src/train.py --config configs/temp_full_mult4_tta4.yaml
+```
+
+Fold별로 다음이 생성됨:
+```
+outputs/full_mult4_tta4/fold0/best.pt
+...
+outputs/full_mult4_tta4/fold4/best.pt
+```
+추론(TTA=4)
+```
+python src/predict.py --config configs/temp_full_mult4_tta4.yaml --tta 4
+```
+
+출력 파일:
+```
+outputs/full_mult4_tta4/submission.csv
+outputs/full_mult4_tta4/predict_logits.pt
+```
+
+### 🧩 전체 파이프라인 요약 다이어그램
+```
+temp_full_mult4_tta4.yaml
+        │
+        ▼
+[ train.py ]
+ ├── StratifiedKFold(5)
+ ├── get_train_transforms()
+ ├── RepeatAug ×4
+ ├── Mixup + AMP + AdamW
+ ├── Early Stopping
+ └── save foldN/best.pt
+        │
+        ▼
+[ predict.py ]
+ ├── get_valid_transforms()
+ ├── Load fold0~4 best.pt
+ ├── Rotation TTA (4-way)
+ ├── Logits 평균 앙상블
+ └── submission.csv 저장
+```
+### 🏁 결론
+
+이 프로젝트는 문서 이미지 분류에서 요구되는:
+
+* 문서 이미지 특화 전처리(Deskew/CLAHE)
+
+* 강력한 증강 전략(RepeatAug ×4, MixUp)
+
+* ConvNeXt Tiny 백본 활용
+
+* K-Fold + TTA 앙상블
+
+을 모두 포함한 End-to-End 고성능 파이프라인입니다.
+
+
 ### Model descrition
 
 - _Write model information and why your select this model_
